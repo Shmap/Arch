@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -12,54 +13,65 @@ Oper::Oper(void)
 
 void Oper::ACreate ()
 {
-	ofstream a (Name());
+	cout << "Введите имя архива" << endl;
+	char name[20];
+	cin >> name;
+	ofstream a (name);
 	a.close();
 }
 
 void Oper::AIns()
 {
 	system ("cls");
-	cout << "Введите путь к архиву" << endl;
-	ofstream afile (Name(), ios_base::out);
-	if (afile.is_open()) //archive file
+	cout << "Введите имя архива" << endl;
+	
+	FILE *archive;
+	char archiveName[20];
+	cin >> archiveName;
+	//cin.getline(archiveName, 20);
+	archive=fopen(archiveName, "a+b");
+
+	std::vector<char> (bufer);
+	bool inMenu = true;
+	while (inMenu)
 	{
-		FILE *afile = afile;
-		ifstream file (Name(),ios_base::in); //isetrting file
-		if (file.is_open())
+		system ("cls");
+		cout << "1) Засунуть файл в архив" << endl
+			<< "2) Прекратить засовывать файлы в архив" << endl;
+		int a;
+		cin >> a;
+		switch (a)
 		{
-			FILE *file = file;
-			unsigned char code;
-			const string Jss;
-			while (feof(file))
-			{
-				for (int i = 7; i==1; i--)
-				{
-					fread (&code, 1, 1, file);
-					if (code>>i)
-						code = '1';
-					else
-						code = '0';
-					fwrite (&code,1,1,afile);
-				}
-				fwrite (&Jss,1,3,afile);
-			}
+		case 1:
+			cout << "Введите имя файла" << endl;
+			FILE *source;
+			char sourceName[20];
+			//cin.getline(sourceName, 20);
+			cin >> sourceName;
+			source = fopen (sourceName, "rb");
+			fread(&bufer, 1, sizeof(source), source);
+			fwrite (&bufer, 1, sizeof(source), archive);
+			fclose(source);
+			break;
+		case 2:
+			inMenu=false;
+			break;
+		default:
+			cout << "Нажато что-то не то" << endl;
+			break;
 		}
-		else
-			cout << "Файл не существует" << endl;
-		file.close();
 	}
-	else
-		cout << "Файл не существует" << endl;
-	afile.close();
 }
 
-string Oper::Name()
+char* Oper::Name()
 {
 	cout << "Введите имя архива" << endl;
-	string name;
-	cin >> name;
+	char name [50];
+	cin.getline(name, 50);
 	//name = name + "x";
-	return name;
+	char *pname;
+	pname = name;
+	return pname;
 }
 Oper::~Oper(void)
 {
